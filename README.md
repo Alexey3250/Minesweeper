@@ -1,5 +1,7 @@
 # Minesweeper AI
 
+<img src="https://i.imgur.com/rDsUAv5.png">
+
 This project is an implementation of an AI agent capable of playing the Minesweeper game. The AI uses the principles of propositional logic to make informed decisions about where to move next. It maintains a knowledge base of the current state of the game and uses this information to decide its next move.
 
 ## Implementation
