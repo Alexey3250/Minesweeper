@@ -29,12 +29,12 @@ To run the game:
    ```
    pip install pygame
    ```
-3. Run the `minesweeper.py` script:
+3. Run the `runner.py` script:
    ```
-   python minesweeper.py
+   python runner.py
    ```
 
-You can also adjust the game's difficulty by changing the `HEIGHT`, `WIDTH`, and `MINES` variables at the top of the `minesweeper.py` file.
+You can also adjust the game's difficulty by changing the `HEIGHT`, `WIDTH`, and `MINES` variables at the top of the `runner.py` file.
 
 ## Notes
 
