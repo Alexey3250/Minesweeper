@@ -2,7 +2,7 @@
 
 <img src="https://i.imgur.com/rDsUAv5.png">
 
-This project is an implementation of an AI agent capable of playing the Minesweeper game. The AI uses the principles of propositional logic to make informed decisions about where to move next. It maintains a knowledge base of the current state of the game and uses this information to decide its next move.
+This project is part of the [CS50's Introduction to Artificial Intelligence with Python](https://cs50.harvard.edu/ai/) course offered by Harvard University. It involves implementing an AI agent capable of playing the Minesweeper game. The AI uses the principles of propositional logic to make informed decisions about where to move next. It maintains a knowledge base of the current state of the game and uses this information to decide its next move.
 
 ## Implementation
 
@@ -41,3 +41,7 @@ You can also adjust the game's difficulty by changing the `HEIGHT`, `WIDTH`, and
 This project makes heavy use of Python's object-oriented features and set operations. Understanding how sets work in Python is key to understanding how the AI maintains its knowledge base and uses inference to identify safe moves and mines.
 
 Please note that this is a basic AI and it's not guaranteed to win all games. Minesweeper is NP-complete, and there will always be cases where the AI must guess to proceed. In these cases, the AI makes random moves.
+
+## Course Info
+
+This project is a part of [CS50's Introduction to Artificial Intelligence with Python](https://cs50.harvard.edu/ai/) course, a course offered by Harvard University that explores the concepts and algorithms at the foundation of modern artificial intelligence, diving into the ideas that give rise to technologies like game-playing engines, handwriting recognition, and machine translation.
