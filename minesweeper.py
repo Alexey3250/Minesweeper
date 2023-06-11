@@ -105,27 +105,42 @@ class Sentence():
         """
         Returns the set of all cells in self.cells known to be mines.
         """
-        raise NotImplementedError
-
+        # If the number of cells in the sentence is equal to the count, then all cells are mines
+        if len(self.cells) == self.count and self.count != 0:
+            return self.cells
+        else:
+            return set()
+        
     def known_safes(self):
         """
         Returns the set of all cells in self.cells known to be safe.
         """
-        raise NotImplementedError
+        # if the count is 0, then all cells are safe
+        if self.count == 0:
+            return self.cells
+        else:
+            return set()
+
+        
 
     def mark_mine(self, cell):
         """
         Updates internal knowledge representation given the fact that
         a cell is known to be a mine.
         """
-        raise NotImplementedError
+        # if the cell is in the sentence, remove it
+        if cell in self.cells:
+            self.cells.remove(cell)
+            self.count -= 1
 
     def mark_safe(self, cell):
         """
         Updates internal knowledge representation given the fact that
         a cell is known to be safe.
         """
-        raise NotImplementedError
+        # if the cell is in the sentence, remove it
+        if cell in self.cells:
+            self.cells.remove(cell)
 
 
 class MinesweeperAI():
@@ -182,7 +197,94 @@ class MinesweeperAI():
             5) add any new sentences to the AI's knowledge base
                if they can be inferred from existing knowledge
         """
-        raise NotImplementedError
+        # Mark the cell as a move that has been made
+        self.moves_made.add(cell)
+        # Mark the cell as safe
+        self.mark_safe(cell)
+
+        # Create a set to hold the cells that are part of a new sentence
+        new_sentence_cells = set()
+
+        # Look at all neighboring cells
+        for i in range(cell[0] - 1, cell[0] + 2):
+            for j in range(cell[1] - 1, cell[1] + 2):
+
+                # Skip the original cell and safe cells
+                if (i, j) == cell or (i, j) in self.safes:
+                    continue
+
+                # If a cell is a known mine, adjust the count and skip the cell
+                if (i, j) in self.mines:
+                    count -= 1
+                    continue
+
+                # Add valid, unknown cells to the new sentence
+                if 0 <= i < self.height and 0 <= j < self.width:
+                    new_sentence_cells.add((i, j))
+
+        # Add the new sentence to the knowledge base
+        self.knowledge.append(Sentence(new_sentence_cells, count))
+
+        while True:
+            knowledge_changed = False
+
+            safes = set()
+            mines = set()
+
+            # Determine any safe cells or mines from the knowledge base
+            for sentence in self.knowledge:
+                safes = safes.union(sentence.known_safes())
+                mines = mines.union(sentence.known_mines())
+
+            # If we've discovered new safe cells or mines, update the respective sets
+            if safes:
+                knowledge_changed = True
+                for safe in safes:
+                    self.mark_safe(safe)
+            if mines:
+                knowledge_changed = True
+                for mine in mines:
+                    self.mark_mine(mine)
+
+            # Remove empty sentences from the knowledge base
+            self.knowledge = [x for x in self.knowledge if x != Sentence(set(), 0)]
+
+            # Iterate through combinations of sentences in the knowledge base
+            for i in range(len(self.knowledge)):
+                for j in range(i + 1, len(self.knowledge)):
+                    sentence_1 = self.knowledge[i]
+                    sentence_2 = self.knowledge[j]
+
+                    # Skip identical sentences
+                    if sentence_1.cells == sentence_2.cells:
+                        continue
+
+                    # Raise an error if a sentence with no cells but a count greater than 0 is found
+                    if sentence_1.cells == set() and sentence_1.count > 0:
+                        print('Error - sentence with no cells and count created')
+                        raise ValueError
+
+                    # If sentence 1 is a subset of sentence 2, infer a new sentence
+                    if sentence_1.cells.issubset(sentence_2.cells):
+                        new_sentence_cells = sentence_2.cells - sentence_1.cells
+                        new_sentence_count = sentence_2.count - sentence_1.count
+
+                        new_sentence = Sentence(new_sentence_cells, new_sentence_count)
+
+                        # If the new sentence isn't already in the knowledge base, add it
+                        if new_sentence not in self.knowledge:
+                            knowledge_changed = True
+                            print('New Inferred Knowledge: ', new_sentence, 'from', sentence_1, ' and ', sentence_2)
+                            self.knowledge.append(new_sentence)
+
+            # Stop the loop if no new knowledge was gained
+            if not knowledge_changed:
+                break
+
+        # Print out the current state of knowledge
+        print(f"Current KB length: {len(self.knowledge)}, Identified Mines: {self.mines}, Safe Moves Left: {self.safes - self.moves_made}, {'_'*86}")
+
+        
 
     def make_safe_move(self):
         """
@@ -193,7 +295,8 @@ class MinesweeperAI():
         This function may use the knowledge in self.mines, self.safes
         and self.moves_made, but should not modify any of those values.
         """
-        raise NotImplementedError
+        safe_moves = self.safes.difference(self.moves_made)
+        return safe_moves.pop() if safe_moves else None
 
     def make_random_move(self):
         """
@@ -202,4 +305,7 @@ class MinesweeperAI():
             1) have not already been chosen, and
             2) are not known to be mines
         """
-        raise NotImplementedError
+        possible_moves = [(i, j) for i in range(self.height) for j in range(self.width)]
+        possible_moves = set(possible_moves).difference(self.moves_made.union(self.mines))
+
+        return random.choice(list(possible_moves)) if possible_moves else None
